@@ -39,11 +39,18 @@ void _init(unsigned long magic, unsigned long addr)
 
     kernel_init(addr);
     multiboot_parse(&kernel_info.multiboot_info);
-    
-    screen_init();
-    gdt_init();
 
-    screen_clear(0x008f33);
+    screen_init();
+
+    screen_clear(0x1E1E1E);
+
+    screen_draw_rect(0, 0, 1920, 8, 0x001AE5);
+    screen_set_color(0xFFFFFF);
+    screen_draw_str("Zypheron Kernel\n\n");
+
+    gdt_init();
+    
+    screen_draw_str("GDT Initialized.\n");
 
     while (1)
         ;
