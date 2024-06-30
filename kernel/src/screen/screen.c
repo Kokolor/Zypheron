@@ -26,7 +26,7 @@
 
 screen_info_t screen_info;
 
-void screen_init()
+void screen_init(void)
 {
     screen_info.framebuffer_addr = (uint32_t *)(uintptr_t)kernel_info.multiboot_info.framebuffer->common.framebuffer_addr;
     screen_info.framebuffer_width = kernel_info.multiboot_info.framebuffer->common.framebuffer_width;

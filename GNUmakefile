@@ -44,4 +44,4 @@ disk: $(KERNEL)
 	@grub-mkrescue -o build/kernel.iso iso_root
 
 run: disk
-	@qemu-system-i386 -cdrom build/kernel.iso -debugcon stdio -m 512M -vga virtio -M q35
+	@qemu-system-i386 -cdrom build/kernel.iso -debugcon stdio -m 512M

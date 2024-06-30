@@ -24,6 +24,7 @@
 
 #include <screen.h>
 #include <kernel.h>
+#include <gdt.h>
 
 kernel_info_t kernel_info;
 
@@ -38,8 +39,11 @@ void _init(unsigned long magic, unsigned long addr)
 
     kernel_init(addr);
     multiboot_parse(&kernel_info.multiboot_info);
+    
     screen_init();
-    screen_clear(0xff4444);
+    gdt_init();
+
+    screen_clear(0x008f33);
 
     while (1)
         ;

@@ -35,5 +35,5 @@ typedef struct
     uint32_t framebuffer_pitch;
 } screen_info_t;
 
-void screen_init();
+void screen_init(void);
 void screen_clear(uint32_t color);

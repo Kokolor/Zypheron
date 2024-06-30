@@ -5,6 +5,7 @@
         "stddef.h": "c",
         "framebuffer.h": "c",
         "multiboot_api.h": "c",
-        "kernel.h": "c"
+        "kernel.h": "c",
+        "screen.h": "c"
     }
 }
