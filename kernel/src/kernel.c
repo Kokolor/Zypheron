@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#include <framebuffer.h>
-#include "kernel.h"
+#include <screen.h>
+#include <kernel.h>
 
 kernel_info_t kernel_info;
 

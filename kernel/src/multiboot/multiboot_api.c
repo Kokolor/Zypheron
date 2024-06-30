@@ -22,25 +22,23 @@
  * SOFTWARE.
  */
 
-#include "framebuffer.h"
+#include <multiboot_api.h>
 
-screen_info_t screen_info;
-
-void screen_init()
+int multiboot_parse(multiboot_info_t *info)
 {
-    screen_info.framebuffer_addr = (uint32_t *)(uintptr_t)kernel_info.multiboot_info.framebuffer->common.framebuffer_addr;
-    screen_info.framebuffer_width = kernel_info.multiboot_info.framebuffer->common.framebuffer_width;
-    screen_info.framebuffer_height = kernel_info.multiboot_info.framebuffer->common.framebuffer_height;
-    screen_info.framebuffer_pitch = kernel_info.multiboot_info.framebuffer->common.framebuffer_pitch / 4;
-}
+    struct multiboot_tag *tag;
 
-void screen_clear(uint32_t color)
-{
-    for (uint32_t y = 0; y < screen_info.framebuffer_height; y++)
+    for (tag = (struct multiboot_tag *)((uintptr_t)(info->info_ptr + 8)); tag->type != MULTIBOOT_TAG_TYPE_END; tag = (struct multiboot_tag *)((uintptr_t)tag + ((tag->size + 7) & ~7)))
     {
-        for (uint32_t x = 0; x < screen_info.framebuffer_width; x++)
+        switch (tag->type)
         {
-            screen_info.framebuffer_addr[y * screen_info.framebuffer_pitch + x] = color;
+        case MULTIBOOT_TAG_TYPE_FRAMEBUFFER:
+        {
+            info->framebuffer = (struct multiboot_tag_framebuffer *)tag;
+            break;
+        }
         }
     }
+
+    return 0;
 }
