@@ -22,22 +22,24 @@
  * SOFTWARE.
  */
 
-extern void gdt_flush(void);
+#pragma once
 
-#include <cpu/gdt/gdt.h>
+#include <stdint.h>
 
-gdt_entry_t gdt[0xFF];
-gdt_ptr_t gdt_ptr;
+#define IDT_ENTRIES 256
 
-void gdt_init(void)
+typedef struct
 {
-    gdt[0] = (gdt_entry_t){0, 0, 0, 0, 0, 0};                       // Null segment
-    gdt[1] = (gdt_entry_t){0xFFFF, 0x0000, 0x00, 0x9A, 0xCF, 0x00}; // Code segment
-    gdt[2] = (gdt_entry_t){0xFFFF, 0x0000, 0x00, 0x92, 0xCF, 0x00}; // Data segment
-    gdt[3] = (gdt_entry_t){0xFFFF, 0x0000, 0x00, 0x97, 0xCF, 0x00}; // Stack segment
+    uint16_t base_low;
+    uint16_t sel;
+    uint16_t type;
+    uint16_t base_high;
+} __attribute__((packed)) idt_entry_t;
 
-    gdt_ptr.limit = (sizeof(gdt) - 1);
-    gdt_ptr.base = (uint32_t)&gdt;
+typedef struct
+{
+    uint16_t limit;
+    uint32_t base;
+} __attribute__((packed)) idt_ptr_t;
 
-    gdt_flush();
-}
+void idt_init(void);

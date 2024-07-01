@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#include <str.h>
-#include <drv.h>
+#include <lib/str.h>
+#include <drv/drv.h>
 
 #define MAX_DRIVERS 32
 

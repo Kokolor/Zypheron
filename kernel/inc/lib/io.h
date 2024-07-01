@@ -25,7 +25,6 @@
 #pragma once
 
 #include <stdint.h>
-#include <stddef.h>
 
-size_t str_len(char *str);
-int str_cmp(const char *first, const char *second);
+void outb(uint16_t port, uint8_t val);
+uint8_t inb(uint16_t port);

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#include <mbt_api.h>
+#include <mbt/mbt_api.h>
 
 int mbt_parse(mbt_info_t *info)
 {

@@ -12,6 +12,9 @@
         "scr.h": "c",
         "krnl.h": "c",
         "mbt_api.h": "c",
-        "mbt.h": "c"
+        "mbt.h": "c",
+        "idt.h": "c",
+        "io.h": "c",
+        "string.h": "c"
     }
 }

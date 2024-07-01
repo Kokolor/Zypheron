@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#include <str.h>
+#include <lib/str.h>
 
 size_t str_len(char *str)
 {
@@ -50,4 +50,12 @@ int str_cmp(const char *first, const char *second)
     }
 
     return *first - *second;
+}
+
+void *mem_cpy(char *dst, char *src, int n)
+{
+    char *p = dst;
+    while (n--)
+        *dst++ = *src++;
+    return p;
 }

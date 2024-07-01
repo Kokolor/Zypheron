@@ -22,22 +22,11 @@
  * SOFTWARE.
  */
 
-extern void gdt_flush(void);
+#pragma once
 
-#include <cpu/gdt/gdt.h>
+#include <stdint.h>
+#include <stddef.h>
 
-gdt_entry_t gdt[0xFF];
-gdt_ptr_t gdt_ptr;
-
-void gdt_init(void)
-{
-    gdt[0] = (gdt_entry_t){0, 0, 0, 0, 0, 0};                       // Null segment
-    gdt[1] = (gdt_entry_t){0xFFFF, 0x0000, 0x00, 0x9A, 0xCF, 0x00}; // Code segment
-    gdt[2] = (gdt_entry_t){0xFFFF, 0x0000, 0x00, 0x92, 0xCF, 0x00}; // Data segment
-    gdt[3] = (gdt_entry_t){0xFFFF, 0x0000, 0x00, 0x97, 0xCF, 0x00}; // Stack segment
-
-    gdt_ptr.limit = (sizeof(gdt) - 1);
-    gdt_ptr.base = (uint32_t)&gdt;
-
-    gdt_flush();
-}
+size_t str_len(char *str);
+int str_cmp(const char *first, const char *second);
+void *mem_cpy(char *dst, char *src, int n);

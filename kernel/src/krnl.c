@@ -22,11 +22,13 @@
  * SOFTWARE.
  */
 
-#include <scr.h>
+#include <drv/scr/scr.h>
+#include <cpu/gdt/gdt.h>
+#include <cpu/idt/idt.h>
+#include <mbt/mbt.h>
+#include <drv/drv.h>
+#include <lib/io.h>
 #include <krnl.h>
-#include <gdt.h>
-#include <mbt.h>
-#include <drv.h>
 
 krnl_info_t krnl_info;
 
@@ -39,6 +41,7 @@ void krnl_init(unsigned long addr)
     krnl_info.mbt_info.info_ptr = addr;
 }
 
+
 void krnl_main(unsigned long magic, unsigned long addr)
 {
     (void)magic;
@@ -50,9 +53,11 @@ void krnl_main(unsigned long magic, unsigned long addr)
     drv_init("scr");
 
     gdt_init();
+    idt_init();
+    asm("sti");
 
     scr_color(0xFFFFFF);
-    char message[] = "Hello, World!";
+    char message[] = "Hello, World!\n";
     scr_write(message, sizeof(message) - 1);
 
     while (1)

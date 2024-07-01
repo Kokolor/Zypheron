@@ -22,22 +22,16 @@
  * SOFTWARE.
  */
 
-extern void gdt_flush(void);
+#include <lib/io.h>
 
-#include <cpu/gdt/gdt.h>
-
-gdt_entry_t gdt[0xFF];
-gdt_ptr_t gdt_ptr;
-
-void gdt_init(void)
+void outb(uint16_t port, uint8_t val)
 {
-    gdt[0] = (gdt_entry_t){0, 0, 0, 0, 0, 0};                       // Null segment
-    gdt[1] = (gdt_entry_t){0xFFFF, 0x0000, 0x00, 0x9A, 0xCF, 0x00}; // Code segment
-    gdt[2] = (gdt_entry_t){0xFFFF, 0x0000, 0x00, 0x92, 0xCF, 0x00}; // Data segment
-    gdt[3] = (gdt_entry_t){0xFFFF, 0x0000, 0x00, 0x97, 0xCF, 0x00}; // Stack segment
+    __asm__ volatile("outb %0, %1" : : "a"(val), "Nd"(port));
+}
 
-    gdt_ptr.limit = (sizeof(gdt) - 1);
-    gdt_ptr.base = (uint32_t)&gdt;
-
-    gdt_flush();
+uint8_t inb(uint16_t port)
+{
+    uint8_t ret;
+    __asm__ volatile("inb %1, %0" : "=a"(ret) : "Nd"(port));
+    return ret;
 }

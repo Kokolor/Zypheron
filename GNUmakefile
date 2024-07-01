@@ -1,9 +1,10 @@
 .PHONY: all clean disk run
 
 CC := i686-elf-gcc
+LD := i686-elf-ld
 NASM := nasm
-CFLAGS := -g -O2 -Wall -Wextra -ffreestanding -nostdlib -Ikernel/inc -Werror
-LDFLAGS := -T kernel/linker.ld -ffreestanding -nostdlib -lgcc
+CFLAGS := -g -O2 -Wall -Wextra -ffreestanding -nostdlib -Ikernel/inc
+LDFLAGS := -T kernel/linker.ld -nostdlib
 NASMFLAGS := -f elf
 
 SRCS := $(shell find kernel/src -name "*.c")
@@ -16,7 +17,7 @@ all: $(KERNEL)
 $(KERNEL): $(OBJS)
 	@echo "Linking kernel"
 	@mkdir -p $(dir $@)
-	@$(CC) $(LDFLAGS) -o $@ $^
+	@$(LD) $(LDFLAGS) -o $@ $^
 
 build/%.o: kernel/src/%.c
 	@echo "Compiling $<"

@@ -26,7 +26,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <mbt.h>
+#include <mbt/mbt.h>
 
 typedef struct
 {
