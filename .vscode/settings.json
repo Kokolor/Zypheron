@@ -6,6 +6,12 @@
         "framebuffer.h": "c",
         "multiboot_api.h": "c",
         "kernel.h": "c",
-        "screen.h": "c"
+        "screen.h": "c",
+        "gdt.h": "c",
+        "drv.h": "c",
+        "scr.h": "c",
+        "krnl.h": "c",
+        "mbt_api.h": "c",
+        "mbt.h": "c"
     }
 }

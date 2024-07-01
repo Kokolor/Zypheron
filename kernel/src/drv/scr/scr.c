@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#include <screen.h>
+#include <scr.h>
 
 char font[128][8] = {
     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, // U+0000 (nul)
@@ -155,93 +155,99 @@ char font[128][8] = {
     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}  // U+007F
 };
 
-screen_info_t screen_info;
+scr_info_t scr_info;
 
-void screen_init(void)
+void scr_init(void)
 {
-    screen_info.framebuffer_addr = (uint32_t *)(uintptr_t)kernel_info.multiboot_info.framebuffer->common.framebuffer_addr;
-    screen_info.framebuffer_width = kernel_info.multiboot_info.framebuffer->common.framebuffer_width;
-    screen_info.framebuffer_height = kernel_info.multiboot_info.framebuffer->common.framebuffer_height;
-    screen_info.framebuffer_pitch = kernel_info.multiboot_info.framebuffer->common.framebuffer_pitch / 4;
+    scr_info.framebuffer_addr = (uint32_t *)(uintptr_t)krnl_info.mbt_info.framebuffer->common.framebuffer_addr;
+    scr_info.framebuffer_width = krnl_info.mbt_info.framebuffer->common.framebuffer_width;
+    scr_info.framebuffer_height = krnl_info.mbt_info.framebuffer->common.framebuffer_height;
+    scr_info.framebuffer_pitch = krnl_info.mbt_info.framebuffer->common.framebuffer_pitch / 4;
 
-    screen_info.cursor_x = 0;
-    screen_info.cursor_y = 0;
+    scr_info.text_cursor_x = 0;
+    scr_info.text_cursor_y = 0;
 }
 
-void screen_draw_pixel(uint32_t x, uint32_t y, uint32_t color)
+void scr_pixel(uint32_t x, uint32_t y, uint32_t color)
 {
-    screen_info.framebuffer_addr[y * screen_info.framebuffer_pitch + x] = color;
+    scr_info.framebuffer_addr[y * scr_info.framebuffer_pitch + x] = color;
 }
 
-void screen_draw_rect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color)
+void scr_rect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color)
 {
     for (uint32_t i = 0; i < width; i++)
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            screen_draw_pixel(x + i, y + j, color);
+            scr_pixel(x + i, y + j, color);
         }
     }
 }
 
-void screen_clear(uint32_t color)
+void scr_clear(uint32_t color)
 {
-    for (uint32_t y = 0; y < screen_info.framebuffer_height; y++)
+    for (uint32_t y = 0; y < scr_info.framebuffer_height; y++)
     {
-        for (uint32_t x = 0; x < screen_info.framebuffer_width; x++)
+        for (uint32_t x = 0; x < scr_info.framebuffer_width; x++)
         {
-            screen_info.framebuffer_addr[y * screen_info.framebuffer_pitch + x] = color;
+            scr_info.framebuffer_addr[y * scr_info.framebuffer_pitch + x] = color;
         }
     }
 }
 
-size_t strlen(char *str)
+void scr_write(char *buf, unsigned int len)
 {
-    size_t i = 0;
-
-    while (str[i] != '\0')
+    for (unsigned int i = 0; i < len; i++)
     {
-        i++;
-    }
-
-    return i;
-}
-
-void screen_draw_char(char c)
-{
-    if (c == '\n')
-    {
-        screen_info.cursor_x = 0;
-        screen_info.cursor_y += 8;
-
-        return;
-    }
-
-    for (uint32_t row = 0; row < 8; row++)
-    {
-        for (uint32_t col = 0; col < 8; col++)
+        char c = buf[i];
+        if (c == '\n')
         {
-            if (font[(uint8_t)c][row] & (1 << col))
+            scr_info.text_cursor_x = 0;
+            scr_info.text_cursor_y += 8;
+            continue;
+        }
+
+        for (uint32_t row = 0; row < 8; row++)
+        {
+            for (uint32_t col = 0; col < 8; col++)
             {
-                screen_draw_pixel(screen_info.cursor_x + col, screen_info.cursor_y + row, screen_info.color);
+                if (font[(uint8_t)c][row] & (1 << col))
+                {
+                    scr_pixel(scr_info.text_cursor_x + col, scr_info.text_cursor_y + row, scr_info.color);
+                }
             }
         }
-    }
+        scr_info.text_cursor_x += 8;
 
-    screen_info.cursor_x += 8;
+        if (scr_info.text_cursor_x >= scr_info.framebuffer_width)
+        {
+            scr_info.text_cursor_x = 0;
+            scr_info.text_cursor_y += 8;
+        }
+
+        if (scr_info.text_cursor_y >= scr_info.framebuffer_height)
+        {
+            scr_info.text_cursor_y = 0;
+        }
+    }
 }
 
-void screen_draw_str(char *str)
+void scr_hex(uint32_t value)
 {
-    size_t length = strlen(str);
+    char hex_chars[] = "0123456789ABCDEF";
+    char buffer[9];
+    buffer[8] = '\0';
 
-    for (uint32_t i = 0; i < length; i++)
+    for (int i = 7; i >= 0; i--)
     {
-        screen_draw_char(str[i]);
+        buffer[i] = hex_chars[value & 0xF];
+        value >>= 4;
     }
+
+    scr_write(buffer, 8);
 }
 
-void screen_set_color(uint32_t color)
+void scr_color(uint32_t color)
 {
-    screen_info.color = color;
+    scr_info.color = color;
 }

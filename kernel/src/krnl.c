@@ -22,16 +22,39 @@
  * SOFTWARE.
  */
 
-#pragma once
+#include <scr.h>
+#include <krnl.h>
+#include <gdt.h>
+#include <mbt.h>
+#include <drv.h>
 
-#include <stdint.h>
-#include <stddef.h>
-#include <multiboot.h>
+krnl_info_t krnl_info;
 
-typedef struct
+static drv_t scr_driver = {
+    .name = "scr",
+    .init = scr_init};
+
+void krnl_init(unsigned long addr)
 {
-    uint32_t info_ptr;
-    struct multiboot_tag_framebuffer *framebuffer;
-} multiboot_info_t;
+    krnl_info.mbt_info.info_ptr = addr;
+}
 
-int multiboot_parse(multiboot_info_t *info);
+void krnl_main(unsigned long magic, unsigned long addr)
+{
+    (void)magic;
+
+    krnl_init(addr);
+    mbt_parse(&krnl_info.mbt_info);
+
+    drv_register(scr_driver);
+    drv_init("scr");
+
+    gdt_init();
+
+    scr_color(0xFFFFFF);
+    char message[] = "Hello, World!";
+    scr_write(message, sizeof(message) - 1);
+
+    while (1)
+        ;
+}

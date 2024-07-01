@@ -22,36 +22,28 @@
  * SOFTWARE.
  */
 
-#include <screen.h>
-#include <kernel.h>
-#include <gdt.h>
+#pragma once
 
-kernel_info_t kernel_info;
+#include <stdint.h>
+#include <krnl.h>
 
-void kernel_init(unsigned long addr)
+typedef struct
 {
-    kernel_info.multiboot_info.info_ptr = addr;
-}
+    uint32_t *framebuffer_addr;
+    uint32_t framebuffer_height;
+    uint32_t framebuffer_width;
+    uint32_t framebuffer_pitch;
+    uint32_t text_cursor_x;
+    uint32_t text_cursor_y;
+    uint32_t color;
+} scr_info_t;
 
-void _init(unsigned long magic, unsigned long addr)
-{
-    (void)magic;
+extern scr_info_t scr_info;
 
-    kernel_init(addr);
-    multiboot_parse(&kernel_info.multiboot_info);
-
-    screen_init();
-
-    screen_clear(0x1E1E1E);
-
-    screen_draw_rect(0, 0, 1920, 8, 0x001AE5);
-    screen_set_color(0xFFFFFF);
-    screen_draw_str("Zypheron Kernel\n\n");
-
-    gdt_init();
-    
-    screen_draw_str("GDT Initialized.\n");
-
-    while (1)
-        ;
-}
+void scr_init(void);
+void scr_pixel(uint32_t x, uint32_t y, uint32_t color);
+void scr_rect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color);
+void scr_clear(uint32_t color);
+void scr_write(char *buf, unsigned int len);
+void scr_hex(uint32_t value);
+void scr_color(uint32_t color);

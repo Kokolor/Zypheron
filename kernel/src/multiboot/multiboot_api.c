@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-#include <multiboot_api.h>
+#include <mbt_api.h>
 
-int multiboot_parse(multiboot_info_t *info)
+int mbt_parse(mbt_info_t *info)
 {
     struct multiboot_tag *tag;
 

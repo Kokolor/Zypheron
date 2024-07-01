@@ -1,4 +1,4 @@
-extern _init
+extern krnl_main
 
 global _start
 
@@ -36,7 +36,7 @@ _start:
 	push ebx
 	push eax
 
-    call _init
+    call krnl_main
 
 section .bss
 stack_bottom:

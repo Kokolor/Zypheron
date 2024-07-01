@@ -26,11 +26,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <multiboot_api.h>
+#include <mbt_api.h>
 
 typedef struct
 {
-    multiboot_info_t multiboot_info;
-} kernel_info_t;
+    mbt_info_t mbt_info;
+} krnl_info_t;
 
-extern kernel_info_t kernel_info;
+extern krnl_info_t krnl_info;

@@ -25,24 +25,13 @@
 #pragma once
 
 #include <stdint.h>
-#include <kernel.h>
+#include <stddef.h>
+#include <mbt.h>
 
 typedef struct
 {
-    uint32_t *framebuffer_addr;
-    uint32_t framebuffer_height;
-    uint32_t framebuffer_width;
-    uint32_t framebuffer_pitch;
+    uint32_t info_ptr;
+    struct multiboot_tag_framebuffer *framebuffer;
+} mbt_info_t;
 
-    uint32_t cursor_x;
-    uint32_t cursor_y;
-    uint32_t color;
-} screen_info_t;
-
-void screen_init(void);
-void screen_draw_pixel(uint32_t x, uint32_t y, uint32_t color);
-void screen_draw_rect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color);
-void screen_clear(uint32_t color);
-void screen_draw_char(char c);
-void screen_draw_str(char *str);
-void screen_set_color(uint32_t color);
+int mbt_parse(mbt_info_t *info);
