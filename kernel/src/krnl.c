@@ -22,12 +22,14 @@
  * SOFTWARE.
  */
 
+#include <paging/paging.h>
 #include <drv/scr/scr.h>
 #include <cpu/gdt/gdt.h>
 #include <cpu/idt/idt.h>
 #include <pmm/pmm.h>
 #include <mbt/mbt.h>
 #include <drv/drv.h>
+#include <lib/str.h>
 #include <lib/io.h>
 #include <krnl.h>
 
@@ -42,20 +44,6 @@ void krnl_init(unsigned long addr)
     krnl_info.mbt_info.info_ptr = addr;
 }
 
-void print_memmap()
-{
-    struct multiboot_tag_mmap *mmap = (struct multiboot_tag_mmap *)krnl_info.mbt_info.memmap;
-    struct multiboot_mmap_entry *entry;
-
-    scr_printf("Memory Map:\n");
-    for (entry = mmap->entries;
-         (uint8_t *)entry < (uint8_t *)mmap + mmap->size;
-         entry = (struct multiboot_mmap_entry *)((uint8_t *)entry + mmap->entry_size))
-    {
-        scr_printf("Base: 0x%llx, Length: 0x%llx, Type: 0x%x\n", entry->addr, entry->len, entry->type);
-    }
-}
-
 void krnl_main(unsigned long magic, unsigned long addr)
 {
     (void)magic;
@@ -64,18 +52,19 @@ void krnl_main(unsigned long magic, unsigned long addr)
     mbt_parse(&krnl_info.mbt_info);
 
     drv_register(scr_driver);
-    drv_init("scr");
 
     gdt_init();
     idt_init();
-    asm("sti");
-
-    scr_color(0xFFFFFF);
-    scr_printf("Hello, World!\n");
-
-    print_memmap();
 
     pmm_init();
+    paging_init();
+
+    drv_init("scr");
+    asm("sti");
+
+    uint32_t* test_directory = paging_new_directory();
+    paging_switch_directory(test_directory);
+    scr_printf("Paging: Switched to test_directory at %p\n", test_directory);
 
     while (1)
         ;

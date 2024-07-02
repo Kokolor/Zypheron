@@ -22,8 +22,10 @@
  * SOFTWARE.
  */
 
+#include <lib/io.h>
 #include <lib/str.h>
 #include <drv/scr/scr.h>
+#include <paging/paging.h>
 
 char font[128][8] = {
     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, // U+0000 (nul)
@@ -160,13 +162,21 @@ scr_info_t scr_info;
 
 void scr_init(void)
 {
-    scr_info.framebuffer_addr = (uint32_t *)(uintptr_t)krnl_info.mbt_info.framebuffer->common.framebuffer_addr;
+    void *phys_fb_addr = (void *)(uintptr_t)krnl_info.mbt_info.framebuffer->common.framebuffer_addr;
+    void *virt_fb_addr = (void *)0xC0000000;
+
+    size_t fb_size = 1920 * 1080 * 4;
+
+    paging_map_range(phys_fb_addr, virt_fb_addr, fb_size, pd0);
+
+    scr_info.framebuffer_addr = (uint32_t *)virt_fb_addr;
     scr_info.framebuffer_width = krnl_info.mbt_info.framebuffer->common.framebuffer_width;
     scr_info.framebuffer_height = krnl_info.mbt_info.framebuffer->common.framebuffer_height;
     scr_info.framebuffer_pitch = krnl_info.mbt_info.framebuffer->common.framebuffer_pitch / 4;
 
     scr_info.text_cursor_x = 0;
     scr_info.text_cursor_y = 0;
+    scr_info.color = 0xFFFFFF;
 }
 
 void scr_pixel(uint32_t x, uint32_t y, uint32_t color)
@@ -242,6 +252,7 @@ void scr_write_char(char c)
 {
     char buf[1] = {c};
     scr_write(buf, 1);
+    outb(0xE9, c);
 }
 
 void scr_write_string(const char *str)

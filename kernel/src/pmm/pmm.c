@@ -27,6 +27,8 @@
 #include <drv/scr/scr.h>
 #include <stddef.h>
 
+#define BLOCK_SIZE 4096
+
 static uint32_t *bitmap = NULL;
 static size_t total_blocks;
 static size_t used_blocks;
@@ -89,7 +91,13 @@ void pmm_init()
         }
     }
 
-    scr_printf("PMM Initialized: %u blocks (%u MB) available\n", total_blocks - used_blocks, (total_blocks - used_blocks) * BLOCK_SIZE / (1024 * 1024));
+    for (size_t i = 0; i < 0x1000 / BLOCK_SIZE; i++)
+    {
+        bitmap_set(i);
+        used_blocks++;
+    }
+
+    scr_printf("PMM Initialized: %d blocks (%d MB) available\n", total_blocks - used_blocks, (total_blocks - used_blocks) * BLOCK_SIZE / (1024 * 1024));
 }
 
 void *pmm_alloc_block()
@@ -111,7 +119,7 @@ void *pmm_alloc_block()
         }
     }
 
-    scr_printf("PMM: Out of memory\n");
+    scr_printf("Out of memory\n");
     return NULL;
 }
 
@@ -125,6 +133,5 @@ void pmm_free_block(void *p)
     }
     else
     {
-        scr_printf("PMM: Double free detected\n");
     }
 }
