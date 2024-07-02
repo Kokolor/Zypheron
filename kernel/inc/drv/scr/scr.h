@@ -25,6 +25,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdarg.h>
 #include <krnl.h>
 
 typedef struct
@@ -45,5 +46,5 @@ void scr_pixel(uint32_t x, uint32_t y, uint32_t color);
 void scr_rect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color);
 void scr_clear(uint32_t color);
 void scr_write(char *buf, unsigned int len);
-void scr_hex(uint32_t value);
+void scr_printf(const char *format, ...);
 void scr_color(uint32_t color);

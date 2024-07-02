@@ -33,10 +33,11 @@ int mbt_parse(mbt_info_t *info)
         switch (tag->type)
         {
         case MULTIBOOT_TAG_TYPE_FRAMEBUFFER:
-        {
             info->framebuffer = (struct multiboot_tag_framebuffer *)tag;
             break;
-        }
+        case MULTIBOOT_TAG_TYPE_MMAP:
+            info->memmap = (struct multiboot_tag_mmap *)tag;
+            break;
         }
     }
 

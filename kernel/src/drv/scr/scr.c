@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <lib/str.h>
 #include <drv/scr/scr.h>
 
 char font[128][8] = {
@@ -232,11 +233,44 @@ void scr_write(char *buf, unsigned int len)
     }
 }
 
-void scr_hex(uint32_t value)
+void scr_color(uint32_t color)
 {
-    char hex_chars[] = "0123456789ABCDEF";
+    scr_info.color = color;
+}
+
+void scr_write_char(char c)
+{
+    char buf[1] = {c};
+    scr_write(buf, 1);
+}
+
+void scr_write_string(const char *str)
+{
+    while (*str)
+    {
+        scr_write_char(*str++);
+    }
+}
+
+void scr_write_int(int value)
+{
+    char buffer[12];
+    itoa(value, buffer, 10);
+    scr_write_string(buffer);
+}
+
+void scr_write_uint(unsigned int value)
+{
+    char buffer[11];
+    utoa(value, buffer, 10);
+    scr_write_string(buffer);
+}
+
+void scr_write_hex(uint32_t value)
+{
     char buffer[9];
     buffer[8] = '\0';
+    char hex_chars[] = "0123456789ABCDEF";
 
     for (int i = 7; i >= 0; i--)
     {
@@ -244,10 +278,57 @@ void scr_hex(uint32_t value)
         value >>= 4;
     }
 
-    scr_write(buffer, 8);
+    scr_write_string(buffer);
 }
 
-void scr_color(uint32_t color)
+void scr_write_pointer(void *ptr)
 {
-    scr_info.color = color;
+    scr_write_string("0x");
+    scr_write_hex((uint32_t)ptr);
+}
+
+void scr_printf(const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    while (*format)
+    {
+        if (*format == '%')
+        {
+            format++;
+            switch (*format)
+            {
+            case 'd':
+                scr_write_int(va_arg(args, int));
+                break;
+            case 'u':
+                scr_write_uint(va_arg(args, unsigned int));
+                break;
+            case 'x':
+                scr_write_hex(va_arg(args, uint32_t));
+                break;
+            case 's':
+                scr_write_string(va_arg(args, const char *));
+                break;
+            case 'p':
+                scr_write_pointer(va_arg(args, void *));
+                break;
+            case 'c':
+                scr_write_char((char)va_arg(args, int));
+                break;
+            default:
+                scr_write_char('%');
+                scr_write_char(*format);
+                break;
+            }
+        }
+        else
+        {
+            scr_write_char(*format);
+        }
+        format++;
+    }
+
+    va_end(args);
 }

@@ -3,7 +3,7 @@
 CC := i686-elf-gcc
 LD := i686-elf-ld
 NASM := nasm
-CFLAGS := -g -O2 -Wall -Wextra -ffreestanding -nostdlib -Ikernel/inc
+CFLAGS := -g -O2 -Wall -Wextra -ffreestanding -nostdlib -Ikernel/inc -Werror
 LDFLAGS := -T kernel/linker.ld -nostdlib
 NASMFLAGS := -f elf
 

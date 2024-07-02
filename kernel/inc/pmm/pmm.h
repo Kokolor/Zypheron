@@ -27,9 +27,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
-size_t str_len(char *str);
-int str_cmp(const char *first, const char *second);
-void *mem_cpy(char *dst, char *src, int n);
-void *mem_set(void *ptr, int value, size_t num);
-char *itoa(int value, char *str, int base);
-char *utoa(unsigned int value, char *str, int base);
+#define BLOCK_SIZE 4096
+
+void pmm_init();
+void *pmm_alloc_block();
+void pmm_free_block(void *p);

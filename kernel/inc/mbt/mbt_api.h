@@ -32,6 +32,7 @@ typedef struct
 {
     uint32_t info_ptr;
     struct multiboot_tag_framebuffer *framebuffer;
+    struct multiboot_tag_mmap *memmap;
 } mbt_info_t;
 
 int mbt_parse(mbt_info_t *info);

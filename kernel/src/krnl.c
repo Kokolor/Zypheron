@@ -25,6 +25,7 @@
 #include <drv/scr/scr.h>
 #include <cpu/gdt/gdt.h>
 #include <cpu/idt/idt.h>
+#include <pmm/pmm.h>
 #include <mbt/mbt.h>
 #include <drv/drv.h>
 #include <lib/io.h>
@@ -41,6 +42,19 @@ void krnl_init(unsigned long addr)
     krnl_info.mbt_info.info_ptr = addr;
 }
 
+void print_memmap()
+{
+    struct multiboot_tag_mmap *mmap = (struct multiboot_tag_mmap *)krnl_info.mbt_info.memmap;
+    struct multiboot_mmap_entry *entry;
+
+    scr_printf("Memory Map:\n");
+    for (entry = mmap->entries;
+         (uint8_t *)entry < (uint8_t *)mmap + mmap->size;
+         entry = (struct multiboot_mmap_entry *)((uint8_t *)entry + mmap->entry_size))
+    {
+        scr_printf("Base: 0x%llx, Length: 0x%llx, Type: 0x%x\n", entry->addr, entry->len, entry->type);
+    }
+}
 
 void krnl_main(unsigned long magic, unsigned long addr)
 {
@@ -57,8 +71,11 @@ void krnl_main(unsigned long magic, unsigned long addr)
     asm("sti");
 
     scr_color(0xFFFFFF);
-    char message[] = "Hello, World!\n";
-    scr_write(message, sizeof(message) - 1);
+    scr_printf("Hello, World!\n");
+
+    print_memmap();
+
+    pmm_init();
 
     while (1)
         ;

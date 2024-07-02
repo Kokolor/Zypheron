@@ -113,10 +113,7 @@ void isr_handler(uint32_t int_no)
 
     if (int_no < 32)
     {
-        scr_write("Kernel Panic: ", 14);
-        scr_hex(int_no);
-        scr_write(errors[int_no], str_len(errors[int_no]));
-        scr_write("\n", 1);
+        scr_printf("Kernel Panic: %s", errors[int_no]);
         while(1)
         {
             asm volatile("cli; hlt");
@@ -127,21 +124,17 @@ void isr_handler(uint32_t int_no)
         static int tic = 0;
         static int sec = 0;
         tic++;
-        if (tic % 10 == 0)
+        if (tic % 50 == 0)
         {
             sec++;
             tic = 0;
-            scr_write("Clock!\n", 7);
+            scr_printf("Clock!\n");
         }
     }
     else if (int_no == 33)
     {
         uint8_t scancode = inb(0x60);
-        scr_write("Interrupt: 0x", 13);
-        scr_hex(int_no);
-        scr_write(" - Scancode: 0x", 16);
-        scr_hex(scancode);
-        scr_write("\n", 1);
+        scr_printf("%x\n", scancode);
     }
 }
 
