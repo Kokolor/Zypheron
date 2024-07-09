@@ -30,13 +30,11 @@ uint32_t *pt0;
 uint32_t *paging_new_directory()
 {
     uint32_t *pd = (uint32_t *)pmm_alloc_block();
-    if (pd == NULL)
+    if (!pd)
         return (uint32_t *)-1;
 
     for (int i = 0; i < 1024; i++)
-    {
         pd[i] = pd0[i];
-    }
 
     return pd;
 }
@@ -48,30 +46,21 @@ void paging_switch_directory(uint32_t *directory)
 
 void paging_init()
 {
-    uint32_t page_addr;
-    int i, pg;
-    
     pd0 = (uint32_t *)pmm_alloc_block();
     pt0 = (uint32_t *)pmm_alloc_block();
 
-    pd0[0] = (uint32_t)pt0;
-    pd0[0] |= 3;
-    for (i = 1; i < 1024; i++)
+    pd0[0] = (uint32_t)pt0 | 3;
+    for (int i = 1; i < 1024; i++)
         pd0[i] = 0;
 
-    page_addr = 0;
-    for (pg = 0; pg < 1024; pg++)
-    {
-        pt0[pg] = page_addr;
-        pt0[pg] |= 3;
-        page_addr += 4096;
-    }
+    uint32_t page_addr = 0;
+    for (int pg = 0; pg < 1024; pg++, page_addr += 4096)
+        pt0[pg] = page_addr | 3;
 
-    asm("    mov %0, %%eax \n \
-        mov %%eax, %%cr3 \n \
-        mov %%cr0, %%eax \n \
-        or %1, %%eax \n \
-        mov %%eax, %%cr0" ::"m"(pd0),
+    asm("mov %0, %%cr3 \n\
+         mov %%cr0, %%eax \n\
+         or %1, %%eax \n\
+         mov %%eax, %%cr0" ::"r"(pd0),
         "i"(0x80000000));
 }
 
@@ -81,14 +70,14 @@ void paging_map_page(void *phys_addr, void *virt_addr, uint32_t *pd)
     uint32_t pt_idx = ((uint32_t)virt_addr >> 12) & 0x03FF;
     uint32_t *pt;
 
-    if (pd[pd_idx] & 1)
-    {
-        pt = (uint32_t *)(pd[pd_idx] & ~0xFFF);
-    }
-    else
+    if (!(pd[pd_idx] & 1))
     {
         pt = (uint32_t *)pmm_alloc_block();
         pd[pd_idx] = (uint32_t)pt | 3;
+    }
+    else
+    {
+        pt = (uint32_t *)(pd[pd_idx] & ~0xFFF);
     }
 
     pt[pt_idx] = (uint32_t)phys_addr | 3;
@@ -112,10 +101,9 @@ void paging_unmap_page(void *virt_addr, uint32_t *pd)
 void paging_map_range(void *phys_start_addr, void *virt_start_addr, size_t size, uint32_t *pd)
 {
     size_t num_pages = (size + 0xFFF) / 0x1000;
-    for (size_t i = 0; i < num_pages; i++)
-    {
-        void *phys_addr = (void *)((uintptr_t)phys_start_addr + i * 0x1000);
-        void *virt_addr = (void *)((uintptr_t)virt_start_addr + i * 0x1000);
-        paging_map_page(phys_addr, virt_addr, pd);
-    }
+    uintptr_t phys_addr = (uintptr_t)phys_start_addr;
+    uintptr_t virt_addr = (uintptr_t)virt_start_addr;
+
+    for (size_t i = 0; i < num_pages; i++, phys_addr += 0x1000, virt_addr += 0x1000)
+        paging_map_page((void *)phys_addr, (void *)virt_addr, pd);
 }

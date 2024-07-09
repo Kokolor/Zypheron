@@ -1,13 +1,13 @@
 section .text
-    extern isr_handler
+    extern exception_handler, pit_handler, keyboard_handler
 
-%macro MAKE_ISR 1
-global isr_%1
-isr_%1:
+%macro MAKE_EXCEPTION 1
+global exception_%1
+exception_%1:
     pusha
     mov eax, %1
     push eax
-    call isr_handler
+    call exception_handler
     add esp, 4
     popa
     mov al, 0x20
@@ -16,7 +16,25 @@ isr_%1:
 %endmacro
 
 %assign i 0
-%rep 34 ; 33
-    MAKE_ISR i
+%rep 32 ; 31
+    MAKE_EXCEPTION i
     %assign i i+1
 %endrep
+
+global isr_32, isr_33
+
+isr_32:
+    pusha
+    call pit_handler
+    popa
+    mov al, 0x20
+    out 0x20, al
+    iret
+
+isr_33:
+    pusha
+    call keyboard_handler
+    popa
+    mov al, 0x20
+    out 0x20, al
+    iret

@@ -26,6 +26,7 @@
 #include <drv/scr/scr.h>
 #include <cpu/gdt/gdt.h>
 #include <cpu/idt/idt.h>
+#include <heap/heap.h>
 #include <pmm/pmm.h>
 #include <mbt/mbt.h>
 #include <drv/drv.h>
@@ -44,6 +45,12 @@ void krnl_init(unsigned long addr)
     krnl_info.mbt_info.info_ptr = addr;
 }
 
+void kheap_print_free_memory()
+{
+    size_t free_memory = kheap_get_free_memory();
+    scr_printf("Free memory in heap: %zu MB\n", free_memory / (1024 * 1024));
+}
+
 void krnl_main(unsigned long magic, unsigned long addr)
 {
     (void)magic;
@@ -60,11 +67,10 @@ void krnl_main(unsigned long magic, unsigned long addr)
     paging_init();
 
     drv_init("scr");
-    asm("sti");
 
-    uint32_t* test_directory = paging_new_directory();
-    paging_switch_directory(test_directory);
-    scr_printf("Paging: Switched to test_directory at %p\n", test_directory);
+    kheap_init();
+
+    asm("sti");
 
     while (1)
         ;

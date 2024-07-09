@@ -17,6 +17,7 @@
         "io.h": "c",
         "string.h": "c",
         "pmm.h": "c",
-        "paging.h": "c"
+        "paging.h": "c",
+        "heap.h": "c"
     }
 }
