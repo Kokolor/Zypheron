@@ -24,7 +24,7 @@
 
 #include <lib/io.h>
 #include <lib/str.h>
-#include <drv/scr/scr.h>
+#include <scr/scr.h>
 #include <cpu/idt/idt.h>
 
 extern void exception_0(void);
@@ -126,7 +126,7 @@ void pit_handler(void)
     static int tic = 0;
     static int sec = 0;
     tic++;
-    if (tic % 20 == 0)
+    if (tic % 75 == 0)
     {
         sec++;
         tic = 0;

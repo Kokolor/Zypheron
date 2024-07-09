@@ -24,7 +24,7 @@
 
 #include <lib/io.h>
 #include <lib/str.h>
-#include <drv/scr/scr.h>
+#include <scr/scr.h>
 #include <paging/paging.h>
 
 char font[128][8] = {

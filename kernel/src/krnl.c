@@ -23,22 +23,18 @@
  */
 
 #include <paging/paging.h>
-#include <drv/scr/scr.h>
 #include <cpu/gdt/gdt.h>
 #include <cpu/idt/idt.h>
 #include <heap/heap.h>
+#include <scr/scr.h>
 #include <pmm/pmm.h>
 #include <mbt/mbt.h>
-#include <drv/drv.h>
 #include <lib/str.h>
 #include <lib/io.h>
+#include <fs/tar.h>
 #include <krnl.h>
 
 krnl_info_t krnl_info;
-
-static drv_t scr_driver = {
-    .name = "scr",
-    .init = scr_init};
 
 void krnl_init(unsigned long addr)
 {
@@ -58,17 +54,37 @@ void krnl_main(unsigned long magic, unsigned long addr)
     krnl_init(addr);
     mbt_parse(&krnl_info.mbt_info);
 
-    drv_register(scr_driver);
-
     gdt_init();
     idt_init();
 
     pmm_init();
     paging_init();
 
-    drv_init("scr");
+    scr_init();
 
     kheap_init();
+
+    tar_parse(krnl_info.mbt_info.modules->mod_start);
+    unsigned int file_count;
+    struct tar_file *files = tar_get_files(&file_count);
+
+    for (unsigned int i = 0; i < file_count; i++)
+    {
+        scr_printf("File: %s, Size: %u bytes\n", files[i].filename, files[i].size);
+    }
+
+    struct tar_file *file = tar_open("data/hello.txt");
+    if (file)
+    {
+        char buffer[256];
+        tar_read(file, buffer, sizeof(buffer) - 1);
+        buffer[file->size < sizeof(buffer) - 1 ? file->size : sizeof(buffer) - 1] = '\0';
+        scr_printf("Content of hello.txt: %s\n", buffer);
+    }
+    else
+    {
+        scr_printf("File hello.txt not found.\n");
+    }
 
     asm("sti");
 

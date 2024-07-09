@@ -52,6 +52,40 @@ int str_cmp(const char *first, const char *second)
     return *first - *second;
 }
 
+int strn_cmp(const char *s1, const char *s2, size_t n)
+{
+    for (size_t i = 0; i < n; i++)
+    {
+        if (s1[i] != s2[i])
+        {
+            return (unsigned char)s1[i] - (unsigned char)s2[i];
+        }
+        if (s1[i] == '\0')
+        {
+            return 0;
+        }
+    }
+
+    return 0;
+}
+
+char *strn_cpy(char *dest, const char *src, size_t n)
+{
+    size_t i;
+
+    for (i = 0; i < n && src[i] != '\0'; i++)
+    {
+        dest[i] = src[i];
+    }
+
+    for (; i < n; i++)
+    {
+        dest[i] = '\0';
+    }
+
+    return dest;
+}
+
 void *mem_cpy(char *dst, char *src, int n)
 {
     char *p = dst;

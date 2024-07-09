@@ -40,6 +40,7 @@ disk: $(KERNEL)
 	@mkfs.ext2 -F build/kernel.img
 	@mkdir -p iso_root/boot/grub
 	@cp $(KERNEL) iso_root/boot/
+	@tar -cvf iso_root/tar_ramdisk.tar data/*
 	@cp LICENSE iso_root/boot/
 	@cp grub.cfg iso_root/boot/grub/grub.cfg
 	@grub-mkrescue -o build/kernel.iso iso_root

@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include <drv/scr/scr.h>
+#include <scr/scr.h>
 #include <pmm/pmm.h>
 
 extern uint32_t *pd0;

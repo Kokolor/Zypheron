@@ -18,6 +18,8 @@
         "string.h": "c",
         "pmm.h": "c",
         "paging.h": "c",
-        "heap.h": "c"
+        "heap.h": "c",
+        "tar.h": "c",
+        "str.h": "c"
     }
 }

@@ -38,6 +38,9 @@ int mbt_parse(mbt_info_t *info)
         case MULTIBOOT_TAG_TYPE_MMAP:
             info->memmap = (struct multiboot_tag_mmap *)tag;
             break;
+        case MULTIBOOT_TAG_TYPE_MODULE:
+            info->modules = (struct multiboot_tag_module *)tag;
+            break;
         }
     }
 

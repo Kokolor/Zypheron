@@ -25,12 +25,29 @@
 #pragma once
 
 #include <stdint.h>
+#include <stddef.h>
 
-typedef struct
+struct tar_header
 {
-    const char *name;
-    void (*init)(void);
-} drv_t;
+    char filename[100];
+    char mode[8];
+    char uid[8];
+    char gid[8];
+    char size[12];
+    char mtime[12];
+    char chksum[8];
+    char typeflag[1];
+};
 
-void drv_register(drv_t driver);
-void drv_init(const char* name);
+struct tar_file
+{
+    char filename[100];
+    unsigned int size;
+    unsigned int start;
+};
+
+unsigned int tar_get_size(const char *in);
+unsigned int tar_parse(unsigned int address);
+struct tar_file *tar_get_files(unsigned int *file_count);
+struct tar_file *tar_open(const char *filename);
+void tar_read(struct tar_file *file, void *buffer, unsigned int size);

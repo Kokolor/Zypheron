@@ -24,7 +24,7 @@
 
 #include <pmm/pmm.h>
 #include <mbt/mbt_api.h>
-#include <drv/scr/scr.h>
+#include <scr/scr.h>
 #include <stddef.h>
 
 #define BLOCK_SIZE 4096

@@ -24,7 +24,7 @@
 
 #include <paging/paging.h>
 #include <heap/heap.h>
-#include <drv/scr/scr.h>
+#include <scr/scr.h>
 
 static heap_block_t *heap_start = NULL;
 static heap_block_t *free_list = NULL;

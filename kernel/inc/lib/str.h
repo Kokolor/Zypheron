@@ -29,6 +29,8 @@
 
 size_t str_len(char *str);
 int str_cmp(const char *first, const char *second);
+int strn_cmp(const char *s1, const char *s2, size_t n);
+char *strn_cpy(char *dest, const char *src, size_t n);
 void *mem_cpy(char *dst, char *src, int n);
 void *mem_set(void *ptr, int value, size_t num);
 char *itoa(int value, char *str, int base);
